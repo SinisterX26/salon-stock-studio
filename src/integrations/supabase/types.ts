@@ -50,12 +50,95 @@ export type Database = {
         }
         Relationships: []
       }
+      sales: {
+        Row: {
+          created_at: string
+          customer: string
+          id: string
+          payment_method: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          unit_price: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer?: string
+          id?: string
+          payment_method?: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          unit_price: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          customer?: string
+          id?: string
+          payment_method?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          position: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          id?: string
+          name: string
+          phone?: string
+          position?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          position?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      record_sale: {
+        Args: {
+          p_customer?: string
+          p_payment_method?: string
+          p_product_id: string
+          p_quantity: number
+          p_unit_price: number
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
