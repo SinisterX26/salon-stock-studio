@@ -8,6 +8,13 @@
       "when": 1793022880368,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793031063578,
+      "tag": "0001_salon_sales_and_team",
+      "breakpoints": true
     }
   ]
 }
