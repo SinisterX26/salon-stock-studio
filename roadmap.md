@@ -1,0 +1,4 @@
+- [ ] Add shared navigation and dashboard overview.
+- [ ] Move inventory controls into Stock.
+- [ ] Add saved sales records and team directory.
+- [ ] Verify signed-in page flows and tests.
