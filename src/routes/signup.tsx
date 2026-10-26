@@ -34,7 +34,7 @@ function Signup() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 6) return toast.error("Password must be at least 6 characters");
+    if (password.length < 6) { toast.error("Password must be at least 6 characters"); return; }
     setBusy(true);
     const { error } = await supabase.auth.signUp({
       email: email.trim(),

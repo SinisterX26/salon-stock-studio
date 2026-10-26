@@ -194,7 +194,7 @@ function ProductDialog({ product, onClose, onSaved }: { product: Partial<Product
   async function save(e: React.FormEvent) {
     e.preventDefault();
     const name = (form.name ?? "").trim();
-    if (!name || name.length > 120) return toast.error("Enter a product name (max 120 characters)");
+    if (!name || name.length > 120) { toast.error("Enter a product name (max 120 characters)"); return; }
     const payload = {
       name,
       category: form.category ?? "Accessories",
@@ -208,7 +208,7 @@ function ProductDialog({ product, onClose, onSaved }: { product: Partial<Product
       ? await supabase.from("products").update(payload).eq("id", form.id)
       : await supabase.from("products").insert(payload);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(form.id ? "Product updated" : "Product added");
     onSaved();
     onClose();
