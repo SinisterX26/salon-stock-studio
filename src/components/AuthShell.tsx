@@ -25,7 +25,9 @@ export function GoogleButton() {
     <button
       type="button"
       onClick={async () => {
-        const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+        const r = await lovable.auth.signInWithOAuth("google", {
+          redirect_uri: window.location.origin,
+        });
         if (r.error) toast.error("Google sign-in failed");
       }}
       className="w-full rounded-full border border-input bg-card py-3 font-semibold text-foreground transition hover:bg-muted"
@@ -35,7 +37,15 @@ export function GoogleButton() {
   );
 }
 
-export function AuthShell({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
+export function AuthShell({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children: ReactNode;
+}) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-brand p-12 lg:flex">

@@ -12,9 +12,15 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Sign up — Heavic Ventures Inventory" },
-      { name: "description", content: "Create an account for the Heavic Ventures inventory system." },
+      {
+        name: "description",
+        content: "Create an account for the Heavic Ventures inventory system.",
+      },
       { property: "og:title", content: "Sign up — Heavic Ventures Inventory" },
-      { property: "og:description", content: "Create an account for the Heavic Ventures inventory system." },
+      {
+        property: "og:description",
+        content: "Create an account for the Heavic Ventures inventory system.",
+      },
     ],
   }),
   component: Signup,
@@ -34,7 +40,10 @@ function Signup() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 6) { toast.error("Password must be at least 6 characters"); return; }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
     setBusy(true);
     const { error } = await supabase.auth.signUp({
       email: email.trim(),
@@ -49,7 +58,9 @@ function Signup() {
   if (sent) {
     return (
       <AuthShell title="Check your email" subtitle={`We sent a confirmation link to ${email}.`}>
-        <Link to="/login" className="font-bold text-primary">Back to log in</Link>
+        <Link to="/login" className="font-bold text-primary">
+          Back to log in
+        </Link>
       </AuthShell>
     );
   }
@@ -59,13 +70,31 @@ function Signup() {
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 rounded-xl" />
+          <Input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="h-12 rounded-xl"
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-xl" />
+          <Input
+            id="password"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="h-12 rounded-xl"
+          />
         </div>
-        <Button type="submit" disabled={busy} className="h-12 w-full rounded-full bg-brand text-base font-bold shadow-brand">
+        <Button
+          type="submit"
+          disabled={busy}
+          className="h-12 w-full rounded-full bg-brand text-base font-bold shadow-brand"
+        >
           {busy ? "Creating..." : "Sign up"}
         </Button>
       </form>
@@ -73,7 +102,9 @@ function Signup() {
       <GoogleButton />
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link to="/login" className="font-bold text-primary">Log in</Link>
+        <Link to="/login" className="font-bold text-primary">
+          Log in
+        </Link>
       </p>
     </AuthShell>
   );

@@ -44,13 +44,31 @@ function Login() {
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 rounded-xl" />
+          <Input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="h-12 rounded-xl"
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-xl" />
+          <Input
+            id="password"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="h-12 rounded-xl"
+          />
         </div>
-        <Button type="submit" disabled={busy} className="h-12 w-full rounded-full bg-brand text-base font-bold shadow-brand">
+        <Button
+          type="submit"
+          disabled={busy}
+          className="h-12 w-full rounded-full bg-brand text-base font-bold shadow-brand"
+        >
           {busy ? "Logging in..." : "Log in"}
         </Button>
       </form>
@@ -58,7 +76,9 @@ function Login() {
       <GoogleButton />
       <p className="mt-6 text-center text-sm text-muted-foreground">
         New here?{" "}
-        <Link to="/signup" className="font-bold text-primary">Create an account</Link>
+        <Link to="/signup" className="font-bold text-primary">
+          Create an account
+        </Link>
       </p>
     </AuthShell>
   );

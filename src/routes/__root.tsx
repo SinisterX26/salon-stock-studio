@@ -80,7 +80,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Heavic Ventures Inventory" },
-      { name: "description", content: "Stock management for Heavic Ventures hair & beauty." },
+      {
+        name: "description",
+        content: "Stock management and salon inventory studio for Heavic Ventures hair and beauty.",
+      },
+      { property: "og:title", content: "Heavic Ventures Inventory" },
+      {
+        property: "og:description",
+        content: "Stock management and salon inventory studio for Heavic Ventures hair and beauty.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -91,7 +99,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Anton&family=Nunito:wght@400;600;700;800&family=Pacifico&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Anton&family=Nunito:wght@400;600;700;800&family=Pacifico&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
