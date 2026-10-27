@@ -93,7 +93,7 @@ function Dashboard() {
   const [onlyLowStock, setOnlyLowStock] = useState<boolean>(false);
   const [sellProductId, setSellProductId] = useState<string | null>(null);
   const [restockOpen, setRestockOpen] = useState<boolean>(false);
-  const [restockProductId, setRestockProductId] = useState<string | null>(null);
+  const [restockProductId, setRestockProductId] = useState<string | null>(null);\n  const [importOpen, setImportOpen] = useState(false);
 
   const { data: products } = useSuspenseQuery(productsOptions);
 
@@ -208,6 +208,17 @@ function Dashboard() {
               title="Add stock replenishment to any salon product"
             >
               <PackagePlus className="mr-1.5 h-4 w-4" /> Restock / Stock In
+            </Button>
+          ) : null}
+
+          {/* CSV Import Button (Admin only) */}
+          {isAdmin ? (
+            <Button
+              variant="outline"
+              className="h-12 rounded-full bg-card px-5 font-bold"
+              onClick={() => setImportOpen(true)}
+            >
+              <Package className="mr-1.5 h-4 w-4" /> Import CSV
             </Button>
           ) : null}
 
@@ -386,6 +397,8 @@ function Dashboard() {
           )}
         </div>
       </main>
+
+      <InventoryImportDialog open={importOpen} onClose={() => setImportOpen(false)} onImported={refresh} />
 
       {/* Edit / Add Product Dialog (Admin Only) */}
       <ProductDialog product={editing} onClose={() => setEditing(null)} onSaved={refresh} />
@@ -593,6 +606,143 @@ function ProductDialog({
             </Button>
           </div>
         </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
+type ImportedProduct = {
+  name: string;
+  category: string;
+  quantity: number;
+  price: number;
+  low_stock_threshold: number;
+  warnings: string[];
+};
+
+function parseCsv(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === '"' && quoted && text[i + 1] === '"') { cell += '"'; i++; }
+    else if (char === '"') quoted = !quoted;
+    else if (char === "," && !quoted) { row.push(cell.trim()); cell = ""; }
+    else if ((char === "\\n" || char === "\\r") && !quoted) {
+      if (char === "\\r" && text[i + 1] === "\\n") i++;
+      row.push(cell.trim());
+      if (row.some((value) => value !== "")) rows.push(row);
+      row = []; cell = "";
+    } else cell += char;
+  }
+  row.push(cell.trim());
+  if (row.some((value) => value !== "")) rows.push(row);
+  if (quoted) throw new Error("The CSV has an unfinished quoted field.");
+  return rows;
+}
+
+function InventoryImportDialog({
+  open, onClose, onImported,
+}: { open: boolean; onClose: () => void; onImported: () => void }) {
+  const [rows, setRows] = useState<ImportedProduct[]>([]);
+  const [fileName, setFileName] = useState("");
+  const [errorText, setErrorText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [imported, setImported] = useState(false);
+
+  useEffect(() => {
+    if (!open) { setRows([]); setFileName(""); setErrorText(""); setImported(false); setBusy(false); }
+  }, [open]);
+
+  async function readFile(file?: File) {
+    setRows([]); setErrorText(""); setImported(false);
+    if (!file) return;
+    setFileName(file.name);
+    try {
+      const raw = parseCsv(await file.text());
+      if (raw.length < 2) throw new Error("The CSV contains no inventory rows.");
+      const headers = raw[0].map((h) => h.toLowerCase().replace(/\\s+/g, " ").trim());
+      const nameIndex = headers.findIndex((h) => ["item description", "product name", "name"].includes(h));
+      const quantityIndex = headers.findIndex((h) => h === "quantity");
+      const priceIndex = headers.findIndex((h) => h.startsWith("unit price") || h === "price");
+      if (nameIndex < 0 || quantityIndex < 0 || priceIndex < 0) {
+        throw new Error('Required columns not found. Include "Item Description", "Quantity", and "Unit Price (GH₵)" headers.');
+      }
+      const parsed: ImportedProduct[] = raw.slice(1).map((cells, index) => {
+        const name = (cells[nameIndex] ?? "").trim();
+        const qtyRaw = (cells[quantityIndex] ?? "").replace(/,/g, "").trim();
+        const priceRaw = (cells[priceIndex] ?? "").replace(/[₵GH\\s,]/g, "").trim();
+        const warnings: string[] = [];
+        if (!name) throw new Error(`Row ${index + 2}: product name is empty.`);
+        const quantity = qtyRaw === "" ? 0 : Number(qtyRaw);
+        const price = priceRaw === "" ? 0 : Number(priceRaw);
+        if (!Number.isFinite(quantity) || quantity < 0 || !Number.isInteger(quantity)) throw new Error(`Row ${index + 2}: quantity must be a non-negative whole number.`);
+        if (!Number.isFinite(price) || price < 0) throw new Error(`Row ${index + 2}: unit price must be a non-negative number.`);
+        if (qtyRaw === "") warnings.push("Missing quantity set to 0");
+        if (priceRaw === "") warnings.push("Missing price set to GH₵0.00");
+        return { name: name.slice(0, 120), category: "Accessories", quantity, price, low_stock_threshold: 5, warnings };
+      });
+      if (parsed.length === 0) throw new Error("No inventory rows were found.");
+      setRows(parsed);
+    } catch (err) {
+      setErrorText(err instanceof Error ? err.message : "Could not read this CSV file.");
+    }
+  }
+
+  async function importRows() {
+    if (!rows.length || busy || imported) return;
+    setBusy(true);
+    try {
+      // Preserve every CSV row, including repeated product names, as a separate catalog record.
+      for (let i = 0; i < rows.length; i += 100) {
+        const batch = rows.slice(i, i + 100).map(({ warnings: _warnings, ...product }) => product);
+        const { error } = await supabase.from("products").insert(batch);
+        if (error) throw new Error(`Import stopped at row ${i + 1}: ${error.message}`);
+      }
+      setImported(true);
+      toast.success(`Imported ${rows.length} inventory rows`);
+      onImported();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Inventory import failed");
+    } finally { setBusy(false); }
+  }
+
+  const warningCount = rows.reduce((total, row) => total + row.warnings.length, 0);
+  return (
+    <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto rounded-2xl">
+        <DialogHeader>
+          <DialogTitle className="font-heading text-2xl uppercase text-secondary">Import Inventory CSV</DialogTitle>
+          <DialogDescription>Upload a CSV with Item Description, Quantity, and Unit Price columns. Rows are added as new products; existing items are not overwritten.</DialogDescription>
+        </DialogHeader>
+        {!imported ? <>
+          <div className="space-y-2 rounded-xl border border-dashed p-4">
+            <Label htmlFor="inventory-csv">Choose inventory CSV</Label>
+            <Input id="inventory-csv" type="file" accept=".csv,text/csv" onChange={(e) => void readFile(e.target.files?.[0])} />
+            {fileName ? <p className="text-xs text-muted-foreground">Selected: {fileName}</p> : null}
+            <p className="text-xs text-muted-foreground">Missing quantity or price is imported as zero. Duplicate names remain separate rows. Imported category defaults to Accessories and low-stock alert defaults to 5.</p>
+          </div>
+          {errorText ? <p role="alert" className="text-sm font-medium text-destructive">{errorText}</p> : null}
+          {rows.length > 0 ? <>
+            <div className="flex flex-wrap gap-3 text-sm">
+              <span className="rounded-full bg-muted px-3 py-1 font-semibold">{rows.length} rows ready</span>
+              {warningCount > 0 ? <span className="rounded-full bg-amber-100 px-3 py-1 font-semibold text-amber-900">{warningCount} missing-value warning(s)</span> : null}
+            </div>
+            <div className="max-h-72 overflow-auto rounded-xl border">
+              <table className="w-full text-left text-sm">
+                <thead className="sticky top-0 bg-muted"><tr><th className="p-2">Product</th><th className="p-2">Quantity</th><th className="p-2">Unit price</th><th className="p-2">Import notes</th></tr></thead>
+                <tbody>{rows.map((row, index) => <tr key={index} className="border-t"><td className="p-2 font-medium">{row.name}</td><td className="p-2">{row.quantity}</td><td className="p-2">{cedi(row.price)}</td><td className="p-2 text-xs text-amber-700">{row.warnings.join(", ") || "—"}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </> : null}
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="button" disabled={!rows.length || busy} onClick={() => void importRows()}>{busy ? "Importing…" : `Import ${rows.length || ""} rows`}</Button>
+          </div>
+        </> : <div className="space-y-4"><p className="font-semibold">Import complete: {rows.length} rows added.</p><p className="text-sm text-muted-foreground">Review the stock list for category assignments and any zero-value records that need correction.</p><div className="flex justify-end"><Button onClick={onClose}>Done</Button></div></div>}
       </DialogContent>
     </Dialog>
   );

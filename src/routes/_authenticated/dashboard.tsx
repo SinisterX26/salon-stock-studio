@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -62,7 +62,6 @@ type Period = "all" | "today" | "week" | "month";
 
 function DashboardPage() {
   const qc = useQueryClient();
-  const navigate = useNavigate();
   const { data: products } = useSuspenseQuery(productsOptions);
   const { data: sales } = useSuspenseQuery(salesOptions);
   const { data: team } = useSuspenseQuery(teamOptions);
@@ -78,13 +77,16 @@ function DashboardPage() {
     if (period === "all") return sales;
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const oneWeekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    const startOfWeek = new Date(startOfToday);
+    const daysSinceMonday = (startOfWeek.getDay() + 6) % 7;
+    startOfWeek.setDate(startOfWeek.getDate() - daysSinceMonday);
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 
     return sales.filter((s) => {
       const saleTime = new Date(s.created_at).getTime();
+      if (!Number.isFinite(saleTime) || saleTime > now.getTime()) return false;
       if (period === "today") return saleTime >= startOfToday;
-      if (period === "week") return saleTime >= oneWeekAgo;
+      if (period === "week") return saleTime >= startOfWeek.getTime();
       if (period === "month") return saleTime >= startOfMonth;
       return true;
     });
@@ -138,7 +140,7 @@ function DashboardPage() {
   // Top selling products by volume
   const topSellers = useMemo(() => {
     const map: Record<string, { name: string; quantity: number; revenue: number }> = {};
-    sales.forEach((s) => {
+    filteredSales.forEach((s) => {
       const key = s.product_name;
       if (!map[key]) map[key] = { name: key, quantity: 0, revenue: 0 };
       map[key].quantity += s.quantity;
@@ -334,7 +336,7 @@ function DashboardPage() {
             {lowStockProducts.length} Item(s)
           </div>
           <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Threshold: ≤ 5 units</span>
+            <span className="text-muted-foreground">Uses each product’s alert threshold</span>
             {lowStockProducts.length > 0 && (
               <Link to="/stock" className="font-bold text-primary hover:underline">
                 View Stock →
