@@ -44,10 +44,11 @@ export interface MockTeamMember {
 }
 
 const initialProducts: MockProduct[] = [
+  // Hair Extensions & Wigs
   {
     id: "prod-1",
     user_id: "demo-user-id",
-    name: "Body Wave Bundle 22”",
+    name: "Body Wave Virgin Bundle 22”",
     category: "Hair Extensions",
     quantity: 18,
     price: 350.0,
@@ -69,6 +70,74 @@ const initialProducts: MockProduct[] = [
   {
     id: "prod-3",
     user_id: "demo-user-id",
+    name: "Deep Wave Human Hair Bundle 18”",
+    category: "Hair Extensions",
+    quantity: 9,
+    price: 290.0,
+    low_stock_threshold: 4,
+    created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-4",
+    user_id: "demo-user-id",
+    name: "HD 13x4 Swiss Lace Frontal 18”",
+    category: "Hair Extensions",
+    quantity: 6,
+    price: 480.0,
+    low_stock_threshold: 3,
+    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-5",
+    user_id: "demo-user-id",
+    name: "Transparent 4x4 Lace Closure 14”",
+    category: "Hair Extensions",
+    quantity: 11,
+    price: 220.0,
+    low_stock_threshold: 4,
+    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-6",
+    user_id: "demo-user-id",
+    name: "Bone Straight Bob Cut Lace Wig 10”",
+    category: "Hair Extensions",
+    quantity: 3,
+    price: 450.0,
+    low_stock_threshold: 2,
+    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-7",
+    user_id: "demo-user-id",
+    name: "Water Wave Glueless HD Lace Wig 24”",
+    category: "Hair Extensions",
+    quantity: 5,
+    price: 750.0,
+    low_stock_threshold: 2,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-8",
+    user_id: "demo-user-id",
+    name: "Afro Kinky Curly Clip-In Extensions (8-pc set)",
+    category: "Hair Extensions",
+    quantity: 7,
+    price: 260.0,
+    low_stock_threshold: 3,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+
+  // Shampoos
+  {
+    id: "prod-9",
+    user_id: "demo-user-id",
     name: "Argan Oil Moisture Shampoo 500ml",
     category: "Shampoo",
     quantity: 12,
@@ -78,9 +147,44 @@ const initialProducts: MockProduct[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: "prod-4",
+    id: "prod-10",
     user_id: "demo-user-id",
-    name: "Keratin Deep Conditioner 350ml",
+    name: "Clarifying ACV Detox Scalp Shampoo 400ml",
+    category: "Shampoo",
+    quantity: 8,
+    price: 55.0,
+    low_stock_threshold: 3,
+    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-11",
+    user_id: "demo-user-id",
+    name: "Sulfate-Free Tea Tree Scalp Therapy Shampoo 500ml",
+    category: "Shampoo",
+    quantity: 14,
+    price: 70.0,
+    low_stock_threshold: 4,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-12",
+    user_id: "demo-user-id",
+    name: "Purple Anti-Yellow Toning Blonde Shampoo 300ml",
+    category: "Shampoo",
+    quantity: 2,
+    price: 60.0,
+    low_stock_threshold: 3,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+
+  // Conditioners
+  {
+    id: "prod-13",
+    user_id: "demo-user-id",
+    name: "Keratin Deep Repair Conditioner 350ml",
     category: "Conditioner",
     quantity: 3,
     price: 80.0,
@@ -89,7 +193,31 @@ const initialProducts: MockProduct[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: "prod-5",
+    id: "prod-14",
+    user_id: "demo-user-id",
+    name: "Leave-In Detangling Silk Conditioner Spray 250ml",
+    category: "Conditioner",
+    quantity: 16,
+    price: 50.0,
+    low_stock_threshold: 5,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-15",
+    user_id: "demo-user-id",
+    name: "Shea Moisture Intensive Hydration Masque 500ml",
+    category: "Conditioner",
+    quantity: 9,
+    price: 85.0,
+    low_stock_threshold: 4,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+
+  // Hair Growth Oils
+  {
+    id: "prod-16",
     user_id: "demo-user-id",
     name: "Organic Castor & Rosemary Growth Oil 100ml",
     category: "Hair Growth Oils",
@@ -100,9 +228,44 @@ const initialProducts: MockProduct[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: "prod-6",
+    id: "prod-17",
     user_id: "demo-user-id",
-    name: "Raw Shea Butter Hair Cream 250g",
+    name: "Pure Moroccan Argan Hair Shine Serum 60ml",
+    category: "Hair Growth Oils",
+    quantity: 11,
+    price: 85.0,
+    low_stock_threshold: 4,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-18",
+    user_id: "demo-user-id",
+    name: "Peppermint Follicle Stimulating Scalp Drops 50ml",
+    category: "Hair Growth Oils",
+    quantity: 4,
+    price: 60.0,
+    low_stock_threshold: 5,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-19",
+    user_id: "demo-user-id",
+    name: "Chebe Hair Growth Herbal Oil Infusion 120ml",
+    category: "Hair Growth Oils",
+    quantity: 15,
+    price: 110.0,
+    low_stock_threshold: 4,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+
+  // Creams
+  {
+    id: "prod-20",
+    user_id: "demo-user-id",
+    name: "Raw Shea Butter Hair & Scalp Cream 250g",
     category: "Cream",
     quantity: 15,
     price: 45.0,
@@ -111,7 +274,31 @@ const initialProducts: MockProduct[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: "prod-7",
+    id: "prod-21",
+    user_id: "demo-user-id",
+    name: "Edge Control 24H Maximum Hold Pomade 100g",
+    category: "Cream",
+    quantity: 28,
+    price: 35.0,
+    low_stock_threshold: 8,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-22",
+    user_id: "demo-user-id",
+    name: "Curl Defining Coconut Styling Custard 300g",
+    category: "Cream",
+    quantity: 10,
+    price: 55.0,
+    low_stock_threshold: 4,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+
+  // Accessories
+  {
+    id: "prod-23",
     user_id: "demo-user-id",
     name: "Silk Satin Bonnet & Edge Wrap Set",
     category: "Accessories",
@@ -122,12 +309,69 @@ const initialProducts: MockProduct[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: "prod-8",
+    id: "prod-24",
     user_id: "demo-user-id",
-    name: "Ceramic Wide-Plate Hair Straightener",
+    name: "Heat Resistant Styling Gloves & Alligator Clips (12-pk)",
+    category: "Accessories",
+    quantity: 18,
+    price: 25.0,
+    low_stock_threshold: 5,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-25",
+    user_id: "demo-user-id",
+    name: "Breathable HD Mesh Wig Caps (4-pack)",
+    category: "Accessories",
+    quantity: 40,
+    price: 15.0,
+    low_stock_threshold: 10,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-26",
+    user_id: "demo-user-id",
+    name: "Wide-Tooth Anti-Static Detangling Comb",
+    category: "Accessories",
+    quantity: 22,
+    price: 18.0,
+    low_stock_threshold: 5,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+
+  // Tools & Equipment
+  {
+    id: "prod-27",
+    user_id: "demo-user-id",
+    name: "Ceramic Wide-Plate Hair Straightener (450°F)",
     category: "Tools & Equipment",
     quantity: 4,
     price: 280.0,
+    low_stock_threshold: 2,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-28",
+    user_id: "demo-user-id",
+    name: "Ionic Salon Hooded Hair Dryer 2200W",
+    category: "Tools & Equipment",
+    quantity: 2,
+    price: 650.0,
+    low_stock_threshold: 1,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "prod-29",
+    user_id: "demo-user-id",
+    name: "Titanium Tourmaline Curling Wand 25mm",
+    category: "Tools & Equipment",
+    quantity: 5,
+    price: 190.0,
     low_stock_threshold: 2,
     created_at: new Date(Date.now() - 86400000).toISOString(),
     updated_at: new Date().toISOString(),
@@ -251,9 +495,46 @@ const initialTeam: MockTeamMember[] = [
 type TableRow = Record<string, unknown>;
 
 class MockStore {
-  products: MockProduct[] = [...initialProducts];
-  sales: MockSale[] = [...initialSales];
-  team_members: MockTeamMember[] = [...initialTeam];
+  products: MockProduct[];
+  sales: MockSale[];
+  team_members: MockTeamMember[];
+
+  constructor() {
+    this.products = this.loadData<MockProduct[]>(
+      "heavic_products_catalog_v2",
+      initialProducts,
+      initialProducts.length,
+    );
+    this.sales = this.loadData<MockSale[]>("heavic_sales_catalog_v2", initialSales, 0);
+    this.team_members = this.loadData<MockTeamMember[]>("heavic_team_catalog_v2", initialTeam, 0);
+  }
+
+  private loadData<T>(key: string, fallback: T, minLength: number): T {
+    if (typeof window !== "undefined" && window.localStorage) {
+      try {
+        const stored = window.localStorage.getItem(key);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length >= minLength) {
+            return parsed as unknown as T;
+          }
+        }
+      } catch {
+        // Fallback to initial seed
+      }
+    }
+    return fallback;
+  }
+
+  private persist(key: string, data: unknown) {
+    if (typeof window !== "undefined" && window.localStorage) {
+      try {
+        window.localStorage.setItem(key, JSON.stringify(data));
+      } catch {
+        // Ignore storage write issues
+      }
+    }
+  }
 
   getTable(name: string): TableRow[] {
     if (name === "products") return this.products as unknown as TableRow[];
@@ -263,9 +544,18 @@ class MockStore {
   }
 
   setTable(name: string, data: TableRow[]) {
-    if (name === "products") this.products = data as unknown as MockProduct[];
-    if (name === "sales") this.sales = data as unknown as MockSale[];
-    if (name === "team_members") this.team_members = data as unknown as MockTeamMember[];
+    if (name === "products") {
+      this.products = data as unknown as MockProduct[];
+      this.persist("heavic_products_catalog_v2", this.products);
+    }
+    if (name === "sales") {
+      this.sales = data as unknown as MockSale[];
+      this.persist("heavic_sales_catalog_v2", this.sales);
+    }
+    if (name === "team_members") {
+      this.team_members = data as unknown as MockTeamMember[];
+      this.persist("heavic_team_catalog_v2", this.team_members);
+    }
   }
 }
 

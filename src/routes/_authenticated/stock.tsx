@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   UserCheck,
   Filter,
+  PackagePlus,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { productsOptions } from "@/lib/salon.queries";
@@ -39,6 +40,7 @@ import {
 } from "@/components/ui/select";
 import { useUserRole } from "@/hooks/use-user-role";
 import { RecordSaleDialog } from "@/components/RecordSaleDialog";
+import { RestockDialog } from "@/components/RestockDialog";
 
 export const Route = createFileRoute("/_authenticated/stock")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -89,6 +91,8 @@ function Dashboard() {
   const [editing, setEditing] = useState<Partial<Product> | null>(null);
   const [onlyLowStock, setOnlyLowStock] = useState<boolean>(false);
   const [sellProductId, setSellProductId] = useState<string | null>(null);
+  const [restockOpen, setRestockOpen] = useState<boolean>(false);
+  const [restockProductId, setRestockProductId] = useState<string | null>(null);
 
   const { data: products } = useSuspenseQuery(productsOptions);
 
@@ -191,12 +195,27 @@ function Dashboard() {
             {onlyLowStock ? "Showing Low Stock" : `Low Stock (${lowCount})`}
           </Button>
 
+          {/* Restock / Stock In Button */}
+          {isAdmin ? (
+            <Button
+              onClick={() => {
+                setRestockProductId(null);
+                setRestockOpen(true);
+              }}
+              variant="outline"
+              className="h-12 rounded-full border-primary/30 bg-card px-5 font-bold text-primary hover:bg-primary/10"
+              title="Add stock replenishment to any salon product"
+            >
+              <PackagePlus className="mr-1.5 h-4 w-4" /> Restock / Stock In
+            </Button>
+          ) : null}
+
           {/* Add Product Button (Admin only) */}
           {isAdmin ? (
             <Button
               onClick={() =>
                 setEditing({
-                  category: "Accessories",
+                  category: "Hair Extensions",
                   quantity: 0,
                   price: 0,
                   low_stock_threshold: 5,
@@ -316,9 +335,22 @@ function Dashboard() {
                         )}
                       </div>
 
-                      {/* Admin Actions: Edit & Delete */}
+                      {/* Admin Actions: Restock, Edit & Delete */}
                       {isAdmin ? (
                         <div className="flex gap-1 border-l pl-2">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => {
+                              setRestockProductId(p.id);
+                              setRestockOpen(true);
+                            }}
+                            aria-label="Restock"
+                            className="h-8 w-8 text-primary hover:bg-primary/10"
+                            title="Restock units for this product"
+                          >
+                            <PackagePlus className="h-4 w-4" />
+                          </Button>
                           <Button
                             size="icon"
                             variant="ghost"
@@ -356,6 +388,16 @@ function Dashboard() {
 
       {/* Edit / Add Product Dialog (Admin Only) */}
       <ProductDialog product={editing} onClose={() => setEditing(null)} onSaved={refresh} />
+
+      {/* Restock Inventory Dialog (Admin Only) */}
+      <RestockDialog
+        open={restockOpen}
+        onClose={() => {
+          setRestockOpen(false);
+          setRestockProductId(null);
+        }}
+        defaultProductId={restockProductId}
+      />
 
       {/* Sell Dialog (Available to both Admin and Staff) */}
       {sellProductId && (

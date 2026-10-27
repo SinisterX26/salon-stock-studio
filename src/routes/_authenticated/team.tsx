@@ -80,7 +80,7 @@ function TeamPage() {
   const qc = useQueryClient();
   const { data: team } = useSuspenseQuery(teamOptions);
   const { data: sales } = useSuspenseQuery(salesOptions);
-  const { isAdmin, role: activeSessionRole, setRole: setActiveSessionRole } = useUserRole();
+  const { isAdmin, role: activeSessionRole } = useUserRole();
 
   const [search, setSearch] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("All");
@@ -252,20 +252,15 @@ function TeamPage() {
               Active Session Role
             </span>
             <div className="rounded-full bg-primary/10 p-2 text-primary">
-              <ArrowRightLeft className="h-5 w-5" />
+              <ShieldCheck className="h-5 w-5" />
             </div>
           </div>
           <div className="mt-3 font-heading text-2xl font-extrabold uppercase text-secondary">
-            {isAdmin ? "Administrator" : "Staff Member"}
+            Administrator
           </div>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => setActiveSessionRole(isAdmin ? "staff" : "admin")}
-            className="mt-1 h-auto p-0 text-xs font-bold text-primary"
-          >
-            Switch to {isAdmin ? "Staff" : "Admin"} mode →
-          </Button>
+          <p className="mt-1 text-xs font-bold text-primary">
+            Permanent Status · Admin cannot switch to staff
+          </p>
         </div>
       </div>
 
@@ -276,25 +271,20 @@ function TeamPage() {
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" />
               <h3 className="font-heading text-xl uppercase tracking-tight text-secondary">
-                Salon Role Privileges Comparison
+                Salon Role Privileges & Authority
               </h3>
             </div>
             <p className="text-xs text-muted-foreground">
-              Understand how Administrator and User / Staff permissions control access throughout
-              Heavic Ventures.
+              Understand how Administrator and Staff permissions operate. Only Administrators have
+              authority to assign roles.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setActiveSessionRole(isAdmin ? "staff" : "admin")}
-              className="rounded-full text-xs font-bold"
-            >
-              <ArrowRightLeft className="mr-1.5 h-3.5 w-3.5" />
-              Test {isAdmin ? "Staff Permissions" : "Admin Permissions"}
-            </Button>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1.5 text-xs font-bold text-primary shadow-xs">
+              <Lock className="h-3.5 w-3.5" />
+              <span>Only Admin Can Assign Roles</span>
+            </span>
           </div>
         </div>
 
@@ -320,7 +310,21 @@ function TeamPage() {
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span>Invite, edit, remove staff, and assign Administrator vs Staff roles</span>
+                <span className="font-semibold text-primary">
+                  Sole authority to assign Administrator vs Staff roles to team members
+                </span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>Admin account is permanently locked (cannot switch to staff)</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>Add, update, and permanently delete products in catalog</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>Freely restock items or adjust baseline prices & alert thresholds</span>
               </li>
             </ul>
           </div>
@@ -344,9 +348,9 @@ function TeamPage() {
                 <CheckCircle2 className="h-3.5 w-3.5 text-secondary shrink-0" />
                 <span>Generate and print salon receipts for client transactions</span>
               </li>
-              <li className="flex items-center gap-1.5 text-muted-foreground/70">
-                <Lock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                <span>Master catalog deletions and team re-assignments are restricted</span>
+              <li className="flex items-center gap-1.5 text-destructive font-medium">
+                <Lock className="h-3.5 w-3.5 text-destructive shrink-0" />
+                <span>Staff members cannot assign, modify, or promote user roles</span>
               </li>
             </ul>
           </div>
@@ -498,6 +502,7 @@ function TeamPage() {
       {editingMember && (
         <TeamMemberDialog
           member={editingMember}
+          isAdmin={isAdmin}
           onClose={() => setEditingMember(null)}
           onSaved={refreshTeam}
         />
@@ -508,10 +513,12 @@ function TeamPage() {
 
 function TeamMemberDialog({
   member,
+  isAdmin,
   onClose,
   onSaved,
 }: {
   member: Partial<TeamMember>;
+  isAdmin: boolean;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -601,23 +608,40 @@ function TeamMemberDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Assigned Privilege Level
-            </Label>
-            <Select
-              value={form.role ?? "staff"}
-              onValueChange={(v: "admin" | "staff") => setForm({ ...form, role: v })}
-            >
-              <SelectTrigger className="h-11 rounded-xl bg-card">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="staff">Staff (Standard: Sales & Stock Lookup)</SelectItem>
-                <SelectItem value="admin">
-                  Administrator (Full Control & Team Management)
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Assigned Privilege Level
+              </Label>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-primary">
+                <ShieldCheck className="h-3 w-3" /> Admin Authority Only
+              </span>
+            </div>
+            {isAdmin ? (
+              <Select
+                value={form.role ?? "staff"}
+                onValueChange={(v: "admin" | "staff") => setForm({ ...form, role: v })}
+              >
+                <SelectTrigger className="h-11 rounded-xl bg-card">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="staff">Staff (Standard: Sales & Stock Lookup)</SelectItem>
+                  <SelectItem value="admin">
+                    Administrator (Full Control & Role Assignment)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="flex h-11 items-center justify-between rounded-xl border bg-muted/50 px-3 text-xs text-muted-foreground">
+                <span>{form.role === "admin" ? "Administrator" : "Staff Member"}</span>
+                <span className="flex items-center gap-1 text-[11px]">
+                  <Lock className="h-3 w-3" /> Locked
+                </span>
+              </div>
+            )}
+            <p className="text-[11px] text-muted-foreground">
+              Only Administrators have permission to assign or change staff privileges.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

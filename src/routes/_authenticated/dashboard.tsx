@@ -18,12 +18,16 @@ import {
   Smartphone,
   ChevronRight,
   Sparkles,
+  PackagePlus,
+  Lock,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { productsOptions, salesOptions, teamOptions } from "@/lib/salon.queries";
 import { cedi, formatDate } from "@/lib/salon";
 import { Button } from "@/components/ui/button";
 import { RecordSaleDialog } from "@/components/RecordSaleDialog";
+import { RestockDialog } from "@/components/RestockDialog";
 import { LowStockAlertCard } from "@/components/LowStockAlertCard";
 import { useUserRole } from "@/hooks/use-user-role";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,10 +65,11 @@ function DashboardPage() {
   const { data: products } = useSuspenseQuery(productsOptions);
   const { data: sales } = useSuspenseQuery(salesOptions);
   const { data: team } = useSuspenseQuery(teamOptions);
-  const { isAdmin, role, setRole, userName } = useUserRole();
+  const { isAdmin, role, userName } = useUserRole();
 
   const [period, setPeriod] = useState<Period>("all");
   const [saleDialogOpen, setSaleDialogOpen] = useState<boolean>(false);
+  const [restockDialogOpen, setRestockDialogOpen] = useState<boolean>(false);
   const [restockBusyId, setRestockBusyId] = useState<string | null>(null);
 
   // Filter sales by time period
@@ -190,6 +195,17 @@ function DashboardPage() {
             >
               <ShoppingCart className="mr-2 h-4 w-4" /> Record Sale
             </Button>
+
+            {isAdmin && (
+              <Button
+                variant="outline"
+                onClick={() => setRestockDialogOpen(true)}
+                className="h-12 rounded-full border-primary/30 bg-card px-5 font-bold text-primary hover:bg-primary/10"
+                title="Replenish stock for any salon item"
+              >
+                <PackagePlus className="mr-2 h-4 w-4" /> Restock Stock
+              </Button>
+            )}
 
             {isAdmin && (
               <Button
@@ -540,38 +556,51 @@ function DashboardPage() {
             </div>
           </div>
 
-          {/* Role Privileges Quick Explainer Card */}
-          <div className="rounded-2xl border bg-muted/40 p-5">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {isAdmin ? (
+          {/* Administrator Role Governance & Security Card */}
+          <div className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 via-card to-card p-5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
                 <ShieldCheck className="h-4 w-4 text-primary" />
-              ) : (
-                <UserCheck className="h-4 w-4 text-secondary" />
-              )}
-              <span>Active Privilege Level</span>
+                <span>Privilege Level</span>
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-extrabold text-primary">
+                <Lock className="h-3 w-3" /> Administrator Locked
+              </span>
             </div>
-            <p className="mt-1 font-heading text-xl uppercase text-secondary">
-              {isAdmin ? "Full Administrator Rights" : "Staff Privileges (Standard)"}
+            <p className="mt-2 font-heading text-xl uppercase text-secondary">
+              Permanent Master Administrator
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {isAdmin
-                ? "You have full control to add/edit/delete products, manage team members, restock inventory, and view all salon financial margins."
-                : "Standard staff can record client sales, check inventory availability, and view salon schedules. Master product catalog changes are restricted."}
+              Administrator authority is permanently active. Only the Administrator can assign roles
+              to salon staff, restock master inventory, and manage team privileges. Administrator
+              account cannot switch or demote to staff.
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setRole(isAdmin ? "staff" : "admin")}
-              className="mt-3 h-8 w-full rounded-full border-border bg-card text-xs font-bold"
-            >
-              Toggle to {isAdmin ? "Staff" : "Admin"} View
-            </Button>
+
+            <div className="mt-3.5 space-y-2 rounded-xl bg-card/80 border p-3 text-xs">
+              <div className="flex items-center gap-2 text-foreground">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span className="font-semibold">
+                  Exclusive authority to assign staff roles in Team section
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-foreground">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>Master stock replenishment & wholesale pricing control</span>
+              </div>
+              <div className="flex items-center gap-2 text-foreground">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>Staff members cannot reassign privileges or promote accounts</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Sale Recording Modal */}
       <RecordSaleDialog open={saleDialogOpen} onClose={() => setSaleDialogOpen(false)} />
+
+      {/* Stock Replenishment Modal */}
+      <RestockDialog open={restockDialogOpen} onClose={() => setRestockDialogOpen(false)} />
     </div>
   );
 }

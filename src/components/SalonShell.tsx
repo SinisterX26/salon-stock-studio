@@ -1,16 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  LayoutDashboard,
-  Package,
-  Receipt,
-  Users,
-  LogOut,
-  ShieldCheck,
-  UserCheck,
-  ArrowRightLeft,
-  Info,
-} from "lucide-react";
+import { LayoutDashboard, Package, Receipt, Users, LogOut, ShieldCheck } from "lucide-react";
 import { BrandMark } from "./AuthShell";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +17,7 @@ export function SalonShell() {
   const { pathname } = useLocation();
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const { role, setRole, isAdmin, userName } = useUserRole();
+  const { userName } = useUserRole();
 
   const title = sections.find((s) => s.to === pathname)?.label ?? "Dashboard";
 
@@ -37,10 +27,6 @@ export function SalonShell() {
     await supabase.auth.signOut();
     await navigate({ to: "/login", replace: true });
   }
-
-  const toggleRole = () => {
-    setRole(isAdmin ? "staff" : "admin");
-  };
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
@@ -89,32 +75,20 @@ export function SalonShell() {
           </nav>
         </div>
 
-        {/* Sidebar Footer: Role & Logout */}
+        {/* Sidebar Footer: Admin Profile & Logout */}
         <div className="hidden border-t border-primary-foreground/15 p-4 lg:block">
           <div className="mb-3 rounded-xl bg-primary-foreground/10 p-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-primary-foreground/70 uppercase tracking-wider">
-                Active Role
+                System Role
               </span>
-              <span
-                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold ${
-                  isAdmin ? "bg-accent text-accent-foreground" : "bg-white/20 text-white"
-                }`}
-              >
-                {isAdmin ? <ShieldCheck className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
-                {isAdmin ? "Administrator" : "Staff Member"}
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-0.5 text-xs font-extrabold text-accent-foreground">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Administrator
               </span>
             </div>
-            <p className="mt-1 truncate text-xs font-medium text-primary-foreground">{userName}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleRole}
-              className="mt-2.5 h-8 w-full border-primary-foreground/30 bg-primary-foreground/10 text-xs font-bold text-primary-foreground hover:bg-primary-foreground hover:text-secondary"
-            >
-              <ArrowRightLeft className="mr-1.5 h-3.5 w-3.5" />
-              Switch to {isAdmin ? "Staff Role" : "Admin Role"}
-            </Button>
+            <p className="mt-1.5 truncate text-xs font-bold text-primary-foreground">{userName}</p>
+            <p className="text-[10px] text-primary-foreground/70">Master Privileges & Team Admin</p>
           </div>
 
           <Button
@@ -140,50 +114,16 @@ export function SalonShell() {
               </h1>
             </div>
 
-            {/* Header Role Bar & Quick Switcher */}
+            {/* Header Role Bar */}
             <div className="flex flex-wrap items-center gap-2.5">
-              <div
-                className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-bold shadow-xs ${
-                  isAdmin
-                    ? "border-primary/20 bg-primary/10 text-primary"
-                    : "border-secondary/20 bg-secondary/10 text-secondary"
-                }`}
-              >
-                {isAdmin ? (
-                  <ShieldCheck className="h-4 w-4 text-primary" />
-                ) : (
-                  <UserCheck className="h-4 w-4 text-secondary" />
-                )}
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1.5 text-xs font-bold text-primary shadow-xs">
+                <ShieldCheck className="h-4 w-4 text-primary" />
                 <span>
-                  Privileges:{" "}
-                  <strong>{isAdmin ? "Administrator (Full Access)" : "Staff (Standard)"}</strong>
+                  Privileges: <strong>Administrator (Master Control)</strong>
                 </span>
               </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleRole}
-                className="h-8 rounded-full border-border bg-card text-xs font-bold hover:bg-accent hover:text-accent-foreground"
-                title={`Click to preview application as ${isAdmin ? "Staff" : "Admin"}`}
-              >
-                <ArrowRightLeft className="mr-1.5 h-3.5 w-3.5" />
-                Switch to {isAdmin ? "Staff View" : "Admin View"}
-              </Button>
             </div>
           </div>
-
-          {/* Context Notice for Staff Mode */}
-          {!isAdmin && (
-            <div className="mt-3 flex items-center gap-2 rounded-lg bg-amber-500/10 px-3.5 py-2 text-xs font-medium text-amber-800 dark:text-amber-200">
-              <Info className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-              <span>
-                <strong>Staff Mode Active:</strong> You can record sales, check stock levels, and
-                view team schedules. Master inventory edits, catalog deletions, and team
-                configuration require Administrator privileges.
-              </span>
-            </div>
-          )}
         </header>
 
         <main className="mx-auto max-w-7xl p-6 sm:p-10">
